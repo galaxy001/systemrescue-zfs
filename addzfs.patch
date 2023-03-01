@@ -1,0 +1,67 @@
+diff --git a/airootfs/root/customize_airootfs.sh b/airootfs/root/customize_airootfs.sh
+index cb43b8b..86f4310 100755
+--- a/airootfs/root/customize_airootfs.sh
++++ b/airootfs/root/customize_airootfs.sh
+@@ -117,6 +117,11 @@ sed -i -e '/# ==== BEGIN sysrescuerepo ====/,/# ==== END sysrescuerepo ====/d' /
+ # Customizations
+ /usr/bin/updatedb
+ 
++# Trust archzfs key
++pacman-key --init
++pacman-key -r DDF7DB817396A49B2A2723F7403BD972F75D9D76
++pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
++
+ # Packages
+ pacman -Q > /root/packages-list.txt
+ expac -H M -s "%-30n %m" | sort -rhk 2 > /root/packages-size.txt
+diff --git a/build.sh b/build.sh
+index 3d4a6df..ce2b7f9 100755
+--- a/build.sh
++++ b/build.sh
+@@ -5,12 +5,12 @@ set -e -u
+ script_path=$(readlink -f ${0%/*})
+ version_file="${script_path}/VERSION"
+ 
+-iso_name=systemrescue
++iso_name=systemrescuezfs
+ iso_version="$(<${version_file})"
+ iso_mainver="${iso_version%-*}"
+ iso_label="RESCUE${iso_mainver//.}"
+-iso_publisher="SystemRescue <http://www.system-rescue.org>"
+-iso_application="SystemRescue"
++iso_publisher="Yuuki Galaxy <https://github.com/galaxy001/systemrescue-zfs>"
++iso_application="SystemRescueZFS"
+ install_dir=sysresccd
+ image_info_file="${install_dir}/.imageinfo"
+ work_dir=work
+diff --git a/packages b/packages
+index 252dff1..c3871e7 100644
+--- a/packages
++++ b/packages
+@@ -110,6 +110,7 @@ linux-firmware
+ linux-firmware-bnx2x
+ linux-firmware-marvell
+ linux-lts
++linux-lts-headers
+ lm_sensors
+ localepurge
+ lshw
+@@ -279,6 +280,7 @@ yay
+ yubikey-manager
+ yubikey-personalization-gui
+ zerofree
++zfs-dkms
+ zile
+ zip
+ zsh
+diff --git a/pacman.conf b/pacman.conf
+index 5a0a1d2..3edde93 100644
+--- a/pacman.conf
++++ b/pacman.conf
+@@ -84,3 +84,6 @@ Include = /etc/pacman.d/mirrorlist
+ 
+ [community]
+ Include = /etc/pacman.d/mirrorlist
++
++[archzfs]
++Server = https://archzfs.com/$repo/$arch
