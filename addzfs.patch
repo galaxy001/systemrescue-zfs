@@ -34,6 +34,18 @@ index 3d4a6df..ce2b7f9 100755
  install_dir=sysresccd
  image_info_file="${install_dir}/.imageinfo"
  work_dir=work
+diff --git a/docker/Dockerfile-build-iso-x86_64 b/docker/Dockerfile-build-iso-x86_64
+index 8b6a43e..c485355 100644
+--- a/docker/Dockerfile-build-iso-x86_64
++++ b/docker/Dockerfile-build-iso-x86_64
+@@ -1,6 +1,7 @@
+ FROM archlinux:latest
+ RUN mkdir -p /workspace
+ COPY tmpfiles/pacman.conf /etc/pacman.conf
++RUN pacman-key --init ; pacman-key --recv-keys DDF7DB817396A49B2A2723F7403BD972F75D9D76 ; pacman-key --lsign-key DDF7DB817396A49B2A2723F7403BD972F75D9D76
+ RUN pacman -Syyu --noconfirm archiso binutils edk2-shell grub hugo isomd5sum mtools && rm -rf /var/cache/pacman/pkg/*
+ CMD ["setarch","x86_64","/usr/bin/bash"]
+ WORKDIR /workspace
 diff --git a/packages b/packages
 index 252dff1..c3871e7 100644
 --- a/packages
